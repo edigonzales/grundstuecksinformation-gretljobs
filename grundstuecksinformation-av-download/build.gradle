@@ -1,0 +1,39 @@
+import ch.so.agi.gretl.tasks.*
+import java.nio.file.Paths
+import de.undercouch.gradle.tasks.download.Download
+
+defaultTasks "replaceCadastralSurveyingData"
+
+def pathToTempFolder = System.getProperty("java.io.tmpdir")
+def pathToUnzipFolder = Paths.get(pathToTempFolder, "unzip_data")
+
+def baseUrl = "https://geodienste.ch/downloads/interlis/av/"
+def cantons = ["BL", "SH", "SO", "SZ"]
+
+cantons.each { canton ->
+
+    task "downloadCadastralSurveyingData_$canton"(type: Download) {
+        description = "Download AV-Daten des Kantons: ${canton}"
+        src baseUrl + canton + "/av_" + canton + "_lv95.zip"
+        dest pathToTempFolder
+        overwrite true
+
+        doLast {
+            println "File downloaded to: " + pathToTempFolder
+        }        
+    }
+
+    task "unzipDataCadastralSurveyingData_$canton"(type: Copy, dependsOn: "downloadCadastralSurveyingData_$canton") { 
+        description = "Unzip AV-Daten des Kantons: ${canton}"
+        from zipTree(pathToTempFolder + "/av_" + canton + "_lv95.zip")
+        into file(pathToUnzipFolder)
+        include "**/*.itf"
+    }
+}
+
+task unzipCadastralSurveyingData() {
+    description = "Aggregationstask für das Herunterladen und Unzippen der AV-Daten."
+    dependsOn {
+        tasks.findAll { task -> task.name.startsWith('unzipDataCadastralSurveyingData_') }
+    }    
+}
