@@ -11,3 +11,7 @@ Beispiel:
 ./gradlew --init-script $PWD/init.gradle -p grundstuecksinformation-av-download/ --no-daemon -i tasks --all
 ./gradlew --init-script $PWD/init.gradle -p grundstuecksinformation-av-import/ --no-daemon -i tasks --all
 ```
+
+Jenkins:
+- Entweder zwei Jobs verdrahten
+- oder sub projects?
