@@ -34,6 +34,8 @@ for envvar in $(env | grep ORG_GRADLE_PROJECT_); do
     envvars_string+="--env ${envvar} "
 done
 
+echo $envvars_string
+
 # Build a string containing the --network ... option if the --docker-network option has been set
 if [[ -v docker_network ]]; then
     declare network_string="--network ${docker_network}"

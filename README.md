@@ -19,11 +19,22 @@ sogis/oereb-db:latest
 
 ## Running
 
+Gradle "pur":
 ```
 export ORG_GRADLE_PROJECT_dbUriGrundstuecksinformation="jdbc:postgresql://localhost:54321/grundstuecksinformation"
 export ORG_GRADLE_PROJECT_dbUserGrundstuecksinformation="gretl"
 export ORG_GRADLE_PROJECT_dbPwdGrundstuecksinformation="gretl"
+export ORG_GRADLE_PROJECT_tmpDir="/tmp/gretl-share"
 ```
+
+Docker:
+```
+export ORG_GRADLE_PROJECT_dbUriGrundstuecksinformation="jdbc:postgresql://host.docker.internal:54321/grundstuecksinformation"
+export ORG_GRADLE_PROJECT_dbUserGrundstuecksinformation="gretl"
+export ORG_GRADLE_PROJECT_dbPwdGrundstuecksinformation="gretl"
+export ORG_GRADLE_PROJECT_tmpDir="/tmp/gretl-share"
+```
+(Gemeinsames Netzwerk ist eine andere, genererischere Variante.)
 
 Beispiel mit Docker:
 ```
@@ -39,3 +50,4 @@ Beispiel mit Gradle "pur":
 
 ## TODO:
 - Wie soll der AV-Import in Jenkins funktionieren? Entweder Jobs 'irgendwie' verdrahten oder mit Subprojekten o.ä. probieren.
+- Geht "ORG_GRADLE_PROJECT_tmpDir" eleganter? Das Verzeichnis mit den heruntergeladenen Daten muss über zwei Gretl-Jobs (Docker!) verfügbar sein. Kann man start-gretl.sh Volumes mitgeben? -> Andi S. fragen.

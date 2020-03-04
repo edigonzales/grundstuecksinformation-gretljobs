@@ -4,7 +4,7 @@ import de.undercouch.gradle.tasks.download.Download
 
 defaultTasks "replaceCadastralSurveyingData"
 
-def pathToTempFolder = System.getProperty("java.io.tmpdir")
+def pathToTempFolder = tmpDir != null ? tmpDir : System.getProperty("java.io.tmpdir")
 def pathToUnzipFolder = Paths.get(pathToTempFolder, "unzip_data")
 
 def baseUrl = "https://geodienste.ch/downloads/interlis/av/"

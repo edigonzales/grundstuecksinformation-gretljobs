@@ -4,7 +4,7 @@ import de.undercouch.gradle.tasks.download.Download
 
 //defaultTasks "replaceCadastralSurveyingData"
 
-def pathToTempFolder = System.getProperty("java.io.tmpdir")
+def pathToTempFolder = tmpDir != null ? tmpDir : System.getProperty("java.io.tmpdir")
 def pathToUnzipFolder = Paths.get(pathToTempFolder, "unzip_data")
 def iliModelAmtlicheVermessung = "DM01AVCH24LV95D"
 def dbSchema = "live" // live schema only at the moment
@@ -12,6 +12,7 @@ def dbSchema = "live" // live schema only at the moment
 def dataSets = []
 
 afterEvaluate {
+    println pathToUnzipFolder
     def filenames = fileTree(dir: pathToUnzipFolder, includes: ['**/*.itf'])
     dataSets = fileTree(dir: pathToUnzipFolder, includes: ['**/*.itf']) 
     
