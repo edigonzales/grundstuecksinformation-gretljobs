@@ -49,5 +49,5 @@ Beispiel mit Gradle "pur":
 ```
 
 ## TODO:
-- Wie soll der AV-Import in Jenkins funktionieren? Entweder Jobs 'irgendwie' verdrahten oder mit Subprojekten o.ä. probieren.
+- Wie soll der AV-Import in Jenkins funktionieren? Entweder Jobs 'irgendwie' verdrahten oder mit Subprojekten o.ä. probieren. -> Subprojekte gehen nicht, da vor der Konfigurationsphase die Daten heruntergeladen sein müssen.
 - Geht "ORG_GRADLE_PROJECT_tmpDir" eleganter? Das Verzeichnis mit den heruntergeladenen Daten muss über zwei Gretl-Jobs (Docker!) verfügbar sein. Kann man start-gretl.sh Volumes mitgeben? -> Andi S. fragen.
