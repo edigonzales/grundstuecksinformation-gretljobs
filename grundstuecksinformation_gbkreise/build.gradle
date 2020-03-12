@@ -1,0 +1,52 @@
+import ch.so.agi.gretl.tasks.*
+import java.nio.file.Paths
+import de.undercouch.gradle.tasks.download.Download
+
+defaultTasks "dbImport"
+
+def pathToTempFolder = System.getProperty("java.io.tmpdir")
+def iliModelGrundbuchKreise = "SO_AGI_AV_GB_Administrative_Einteilungen_Publikation_20180822"
+ 
+def landRegisterSubunitBaseUrl = "https://s3.eu-central-1.amazonaws.com/ch.so.agi.av-gb-administrative-einteilung/"
+def landRegisterSubunitDataSet = "ch.so.agi.av-gb-administrative-einteilung"
+
+//def dbSchemas = ["stage", "live"]
+def dbSchemas = ["live"]
+
+task download(type: Download) {
+    description = "Download GB-Kreise."
+    src landRegisterSubunitBaseUrl + landRegisterSubunitDataSet + ".xtf"
+    dest pathToTempFolder
+    overwrite true
+
+    doLast {
+        println "File downloaded to: " + pathToTempFolder
+    }
+}
+
+dbSchemas.each { dbSchema ->
+    task "import_$dbSchema"(type: Ili2pgReplace, dependsOn: download) {
+        description = "Import GB-Kreise in die Datenbank."
+        database = [dbUriGrundstuecksinformation, dbUserGrundstuecksinformation, dbPwdGrundstuecksinformation]
+        dbschema = dbSchema
+        models = iliModelGrundbuchKreise
+        dataFile = file(Paths.get(pathToTempFolder.toString(), landRegisterSubunitDataSet + ".xtf"))
+        dataset = landRegisterSubunitDataSet
+        disableValidation = false
+
+        doLast {
+            println "Data imported into schema $dbSchema of db $dbUriGrundstuecksinformation"
+        }
+    }
+}
+
+task dbImport() {
+    description = "Aggregation task."
+    dependsOn {
+        tasks.findAll { task -> task.name.startsWith('import_') }
+    }    
+    
+    doLast {
+        println "Data import into db finished."
+    }
+}

@@ -38,14 +38,18 @@ export ORG_GRADLE_PROJECT_tmpDir="/tmp/gretl-share"
 
 Beispiel mit Docker:
 ```
-./start-gretl.sh --docker-image sogis/gretl-runtime:latest --job-directory $PWD/grundstuecksinformation-av-download --no-daemon -i tasks --all
-./start-gretl.sh --docker-image sogis/gretl-runtime:latest --job-directory $PWD/grundstuecksinformation-av-import --no-daemon -i tasks --all
+./start-gretl.sh --docker-image sogis/gretl-runtime:latest --job-directory $PWD/grundstuecksinformation_av-download --no-daemon -i tasks --all
+./start-gretl.sh --docker-image sogis/gretl-runtime:latest --job-directory $PWD/grundstuecksinformation_av-import --no-daemon -i tasks --all
+
+./start-gretl.sh --docker-image sogis/gretl-runtime:latest --job-directory $PWD/grundstuecksinformation_plzo --no-daemon -i tasks --all
+
+./start-gretl.sh --docker-image sogis/gretl-runtime:latest --job-directory $PWD/grundstuecksinformation_gbkreise --no-daemon -i tasks --all
 ```
 
 Beispiel mit Gradle "pur":
 ```
-./gradlew --init-script $PWD/init.gradle -p grundstuecksinformation-av-download/ --no-daemon -i tasks --all
-./gradlew --init-script $PWD/init.gradle -p grundstuecksinformation-av-import/ --no-daemon -i tasks --all
+./gradlew --init-script $PWD/init.gradle -p grundstuecksinformation-av_download/ --no-daemon -i tasks --all
+./gradlew --init-script $PWD/init.gradle -p grundstuecksinformation-av_import/ --no-daemon -i tasks --all
 ```
 
 ## TODO:
