@@ -34,7 +34,7 @@ export ORG_GRADLE_PROJECT_dbUserGrundstuecksinformation="gretl"
 export ORG_GRADLE_PROJECT_dbPwdGrundstuecksinformation="gretl"
 export ORG_GRADLE_PROJECT_tmpDir="/tmp/gretl-share"
 ```
-(Gemeinsames Netzwerk ist eine andere, genererischere Variante.)
+(Gemeinsames Netzwerk ist eine andere, generischere Variante.)
 
 Beispiel mit Docker:
 ```
@@ -44,6 +44,8 @@ Beispiel mit Docker:
 ./start-gretl.sh --docker-image sogis/gretl-runtime:latest --job-directory $PWD/grundstuecksinformation_plzo --no-daemon -i tasks --all
 
 ./start-gretl.sh --docker-image sogis/gretl-runtime:latest --job-directory $PWD/grundstuecksinformation_gbkreise --no-daemon -i tasks --all
+
+./start-gretl.sh --docker-image sogis/gretl-runtime:latest --job-directory $PWD/grundstuecksinformation_annex --no-daemon -i tasks --all
 ```
 
 Beispiel mit Gradle "pur":

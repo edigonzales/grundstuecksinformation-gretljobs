@@ -1,0 +1,52 @@
+import ch.so.agi.gretl.tasks.*
+import java.nio.file.Paths
+import de.undercouch.gradle.tasks.download.Download
+
+defaultTasks "dbImport"
+
+def pathToTempFolder = System.getProperty("java.io.tmpdir")
+def iliModelAnnex = "OeREB_ExtractAnnex_V1_0"
+ 
+def annexBaseUrl = "https://geo.so.ch/geodata/ch.so.agi.extractannex.oereb/"
+def annexDataSet = "ch.so.agi.OeREB_extractAnnex"
+
+//def dbSchemas = ["stage", "live"]
+def dbSchemas = ["live"]
+
+task download(type: Download) {
+    description = "Download Annex-Modell."
+    src annexBaseUrl + annexDataSet + ".xtf"
+    dest pathToTempFolder
+    overwrite true
+
+    doLast {
+        println "File downloaded to: " + pathToTempFolder
+    }
+}
+
+dbSchemas.each { dbSchema ->
+    task "import_$dbSchema"(type: Ili2pgReplace, dependsOn: download) {
+        description = "Import Annex-Modell in die Datenbank."
+        database = [dbUriGrundstuecksinformation, dbUserGrundstuecksinformation, dbPwdGrundstuecksinformation]
+        dbschema = dbSchema
+        models = iliModelAnnex
+        dataFile = file(Paths.get(pathToTempFolder.toString(), annexDataSet + ".xtf"))
+        dataset = annexDataSet
+        disableValidation = false
+
+        doLast {
+            println "Data imported into schema $dbSchema of db $dbUriGrundstuecksinformation"
+        }
+    }
+}
+
+task dbImport() {
+    description = "Aggregation task."
+    dependsOn {
+        tasks.findAll { task -> task.name.startsWith('import_') }
+    }    
+    
+    doLast {
+        println "Data import into db finished."
+    }
+}
