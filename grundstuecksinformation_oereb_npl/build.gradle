@@ -1,0 +1,61 @@
+import ch.so.agi.gretl.tasks.*
+import java.nio.file.Paths
+import de.undercouch.gradle.tasks.download.Download
+
+defaultTasks "dbImport"
+
+def pathToTempFolder = System.getProperty("java.io.tmpdir")
+def iliModelTransferstruktur = "OeREBKRMtrsfr_V1_1"
+ 
+def nplBaseUrl = "https://s3.eu-central-1.amazonaws.com/ch.so.agi.oereb-data/"
+def nplDataSet = "ch.so.arp.nutzungsplanung.oereb"
+
+//def dbSchemas = ["stage", "live"]
+def dbSchemas = ["live"]
+
+task download(type: Download) {
+    description = "Download Nutzungsplanung."
+    src nplBaseUrl + nplDataSet + ".xtf"
+    dest pathToTempFolder
+    overwrite true
+
+    doLast {
+        println "File downloaded to: " + pathToTempFolder
+    }
+}
+
+dbSchemas.each { dbSchema ->
+    task "import_$dbSchema"(type: Ili2pgReplace, dependsOn: "download") {
+        description = "Import Nutzungsplanung."
+        database = [dbUriGrundstuecksinformation, dbUserGrundstuecksinformation, dbPwdGrundstuecksinformation]
+        dbschema = dbSchema
+        models = iliModelTransferstruktur
+        dataFile = file(Paths.get(pathToTempFolder.toString(), nplDataSet + ".xtf"))
+        dataset = nplDataSet
+        disableValidation = true
+
+        doLast {
+            println "Data imported into schema $dbSchema of db $dbUriOereb"
+        }
+    }
+
+/*
+    task "refreshOerebWMSTables_$dbSchema"(type: SqlExecutor, dependsOn: "import_$dbSchema") {
+        description = "Aktualisiert OEREB WMS Tabellen."
+        database = [dbUriOereb, dbUserOereb, dbPwdOereb]
+        sqlFiles = ["update_oerebwms_landuseplans_tables.sql"]
+        sqlParameters = [dbSchema: dbSchema.toString()]
+    }
+*/
+}
+
+task dbImport() {
+    description = "Aggregation task."
+    dependsOn {
+        tasks.findAll { task -> task.name.startsWith('import_') }
+    }    
+    
+    doLast {
+        println "Data import into db finished."
+    }
+}

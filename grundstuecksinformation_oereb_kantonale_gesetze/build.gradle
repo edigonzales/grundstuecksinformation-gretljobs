@@ -1,0 +1,49 @@
+import ch.so.agi.gretl.api.TransferSet
+import ch.so.agi.gretl.tasks.*
+import java.nio.file.Paths
+import de.undercouch.gradle.tasks.download.Download
+
+apply plugin: "de.undercouch.download"
+apply plugin: "ch.so.agi.gretl"
+
+defaultTasks "dbImport"
+
+//def dbSchemas = ["stage", "live"]
+def dbSchemas = ["live"]
+
+def iliModelVorschriften = "OeREBKRMvs_V1_1"
+
+def cantonalLegalBasisBaseUrl = "https://geo.so.ch/geodata/ch.so.sk.gesetze.oereb/"
+def cantonalLegalBaseDataSet = "ch.so.sk.gesetze"
+
+def pathToTempFolder = System.getProperty("java.io.tmpdir")
+
+task download(type: Download) {
+    description = "Download kantonale Gesetze ($cantonalLegalBaseDataSet)."
+    src cantonalLegalBasisBaseUrl + cantonalLegalBaseDataSet + ".xtf"
+    dest pathToTempFolder
+    overwrite true    
+}
+
+dbSchemas.each { dbSchema ->
+    task "import_$dbSchema"(type: Ili2pgReplace, dependsOn: 'download') {
+        description = "Import kantonale Gesetze ($cantonalLegalBaseDataSet)."
+        database = [dbUriGrundstuecksinformation, dbUserGrundstuecksinformation, dbPwdGrundstuecksinformation]
+        models = iliModelVorschriften
+        dbschema = dbSchema
+        dataFile = file(Paths.get(pathToTempFolder.toString(), cantonalLegalBaseDataSet + ".xtf"))
+        dataset = cantonalLegalBaseDataSet 
+        disableValidation = false
+    }
+}
+
+task dbImport() {
+    description = "Aggregation task."
+    dependsOn {
+        tasks.findAll { task -> task.name.startsWith('import_') }
+    }    
+    
+    doLast {
+        println "Data import into db finished."
+    }
+}
